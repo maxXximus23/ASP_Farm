@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MinecraftFarm.BussinessLogicLayer.Contracts;
 using MinecraftFarm.BussinessLogicLayer.DTOs;
 using MinecraftFarm.DataAccessLayer.Contexts;
+using MinecraftFarm.DataAccessLayer.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MinecraftFarm.BussinessLogicLayer.Services
@@ -30,34 +31,53 @@ namespace MinecraftFarm.BussinessLogicLayer.Services
                 .OrderBy(playerResource => playerResource.Id)
                 .ToArray();
 
-            playerResourceDtos = playerResourceDtos.OrderBy(dto => dto.Id).ToArray();
-
-            for (int i = 0; i < existingResources.Length; i++)
-            {
-                existingResources[i].Quantity = playerResourceDtos[i].Quantity;
-            }
+            var joined = existingResources.Join(playerResourceDtos,
+                resource => resource.Id,
+                resourceDto => resourceDto.Id,
+                (resource, resourceDto) => UpdateResourceQuantityValue(resource, resourceDto.Quantity)
+                ).ToArray();
 
             _databaseContext.SaveChanges();
         }
 
+        private PlayerResource UpdateResourceQuantityValue(PlayerResource resource, int newQuantity)
+        {
+            resource.Quantity = newQuantity;
+            return resource;
+        }
+
         public void DeleteById(int id)
         {
-            throw new NotImplementedException();
+            var player = _databaseContext.Players.Single(player => player.Id == id);
+
+            _databaseContext.Players.Remove(player);
+            _databaseContext.SaveChanges();
         }
 
-        public Task<IReadOnlyCollection<PlayerDto>> GetAll()
+        public async Task<IReadOnlyCollection<PlayerDto>> GetAll()
         {
-            throw new NotImplementedException();
+            var dtos = await _databaseContext.Players
+                .AsNoTracking()
+                .ToArrayAsync();
+
+            return _mapper.Map<IReadOnlyCollection<PlayerDto>>(dtos);
         }
 
-        public Task<PlayerDto> GetById(int id)
+        public async Task<PlayerDto> GetById(int id)
         {
-            throw new NotImplementedException();
+            var player = await _databaseContext.Players.SingleAsync(player => player.Id == id);
+
+            return _mapper.Map<PlayerDto>(player);
         }
 
         public void Update(PlayerDto playerDto)
         {
-            throw new NotImplementedException();
+            var player = _databaseContext.Players.Single(player => player.Id == playerDto.Id);
+
+            player = _mapper.Map<Player>(playerDto);
+
+            _databaseContext.Update(player);
+            _databaseContext.SaveChanges();
         }
     }
 }
