@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,7 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MinecraftFarm.BussinessLogicLayer.Contracts;
+using MinecraftFarm.BussinessLogicLayer.Services;
 using MinecraftFarm.DataAccessLayer.Contexts;
+using System;
 
 namespace MinecraftFarm
 {
@@ -28,6 +27,8 @@ namespace MinecraftFarm
             string connectionString = Configuration["ConnectionStrings:DatabaseContext"];
             services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddScoped<IPlayersService, PlayersService>();
+            services.AddScoped<IResourceService, ResourcesService>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 

@@ -11,11 +11,17 @@ using System.Threading.Tasks;
 
 namespace MinecraftFarm.BussinessLogicLayer.Services
 {
-    class ResourceService : IResourceService
+    public class ResourcesService : IResourceService
     {
         private readonly DatabaseContext _databaseContext;
 
         private readonly IMapper _mapper;
+
+        public ResourcesService(IMapper mapper, DatabaseContext databaseContext)
+        {
+            _databaseContext = databaseContext;
+            _mapper = mapper;
+        }
         public void DeleteById(int id)
         {
             var resource = _databaseContext.Resources.Single(resource => resource.Id == id);

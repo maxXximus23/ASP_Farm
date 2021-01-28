@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MinecraftFarm.BussinessLogicLayer.Contracts
 {
-    interface IResourceService
+    public interface IResourceService
     {
         public Task<IReadOnlyCollection<ResourceDto>> GetAll();
 

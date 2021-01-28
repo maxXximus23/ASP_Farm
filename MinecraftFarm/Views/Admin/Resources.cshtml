@@ -1,0 +1,13 @@
+﻿@model ICollection<MinecraftFarm.ViewModels.ResourceViewModel>
+    <div>
+        @foreach (var resource in Model)
+        {
+        <div>
+            <img style="width: 32px; height: 32px" src="@Url.Content($"~/img/{resource.IconFileName}")" alt="Error image" />
+            <h3>@resource.Name</h3>
+            <p><b>Id: </b>@resource.Id</p>
+            <p><b>Description: </b>@resource.Description</p>
+        </div>
+        <hr />
+        }
+    </div> 
