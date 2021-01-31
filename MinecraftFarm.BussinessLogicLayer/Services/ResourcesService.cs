@@ -4,7 +4,6 @@ using MinecraftFarm.BussinessLogicLayer.Contracts;
 using MinecraftFarm.BussinessLogicLayer.DTOs;
 using MinecraftFarm.DataAccessLayer.Contexts;
 using MinecraftFarm.DataAccessLayer.Entities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,6 +21,14 @@ namespace MinecraftFarm.BussinessLogicLayer.Services
             _databaseContext = databaseContext;
             _mapper = mapper;
         }
+
+        public void Add(ResourceDto resourceDto)
+        {
+            var newResource = _mapper.Map<Resource>(resourceDto);
+            _databaseContext.Resources.Add(newResource);
+            _databaseContext.SaveChanges();
+        }
+
         public void DeleteById(int id)
         {
             var resource = _databaseContext.Resources.Single(resource => resource.Id == id);
@@ -41,14 +48,18 @@ namespace MinecraftFarm.BussinessLogicLayer.Services
 
         public async Task<ResourceDto> GetById(int id)
         {
-            var resource = await _databaseContext.Resources.SingleAsync(resource => resource.Id == id);
+            var resource = await _databaseContext.Resources
+                .AsNoTracking()
+                .SingleAsync(resource => resource.Id == id);
 
             return _mapper.Map<ResourceDto>(resource);
         }
 
         public void Update(ResourceDto resourceDto)
         {
-            var resource = _databaseContext.Resources.Single(resource => resource.Id == resourceDto.Id);
+            var resource = _databaseContext.Resources
+                .AsNoTracking()
+                .Single(resource => resource.Id == resourceDto.Id);
 
             resource = _mapper.Map<Resource>(resourceDto);
 

@@ -1,13 +1,35 @@
 ﻿@model ICollection<MinecraftFarm.ViewModels.ResourceViewModel>
-    <div>
-        @foreach (var resource in Model)
-        {
-        <div>
-            <img style="width: 32px; height: 32px" src="@Url.Content($"~/img/{resource.IconFileName}")" alt="Error image" />
+<div>
+    @foreach (var resource in Model)
+    {
+        <div class="resource">
+            <img style="width: 32px; height: 32px" src="@resource.IconFileName" alt="Error image" />
             <h3>@resource.Name</h3>
             <p><b>Id: </b>@resource.Id</p>
             <p><b>Description: </b>@resource.Description</p>
+            <a class="btn btn-info" asp-action="EditResource" asp-route-id="@resource.Id">Edit</a>
+            <button class="btn btn-danger btn-delete" data-id="@resource.Id">Delete</button>
         </div>
         <hr />
-        }
-    </div> 
+    }
+    <a class="btn btn-success" asp-action="AddResource">Create</a>
+</div>
+
+@section Scripts{
+    <script>
+        $(".btn-delete").click((el) => {
+            let id = $(el.target).data("id"); 
+            if (confirm("Are you really want to delete this resource?")) {
+                $.ajax({
+                    url: '@Url.Action("DeleteResource", "Admin")',
+                    method: 'post',
+                    data: { id: id },
+                    error: function () { alert("Error occured!") },
+                    success: function () {
+                        $(el.target).parent(".resource").hide();
+                    }
+                });
+            }
+        })
+    </script>
+}
