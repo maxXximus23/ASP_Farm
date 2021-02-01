@@ -8,7 +8,11 @@ namespace MinecraftFarm.BussinessLogicLayer.Mapping.Profiles
     {
         public PlayerProfile()
         {
-            CreateMap<Player, PlayerDto>().ReverseMap();
+            CreateMap<Player, PlayerDto>();
+            CreateMap<PlayerDto, Player>()
+                .ForMember(p => p.Id, e => e.Ignore())
+                .ForMember(p => p.Login, e => e.Ignore())
+                .ForMember(p => p.Password, e => e.Ignore());
         }
     }
 }

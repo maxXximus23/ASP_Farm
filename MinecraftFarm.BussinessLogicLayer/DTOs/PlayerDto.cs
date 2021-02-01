@@ -17,5 +17,7 @@ namespace MinecraftFarm.BussinessLogicLayer.DTOs
         public int Emeralds { get; set; }
 
         public ICollection<ResourceDto> Resources { get; set; }
+
+        public bool IsBanned { get; set; }
     }
 }

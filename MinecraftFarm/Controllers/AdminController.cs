@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using MinecraftFarm.BussinessLogicLayer.Contracts;
 using MinecraftFarm.BussinessLogicLayer.DTOs;
 using MinecraftFarm.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Action = MinecraftFarm.ViewModels.Action;
 
 namespace MinecraftFarm.Controllers
 {
@@ -12,10 +14,13 @@ namespace MinecraftFarm.Controllers
     {
         private readonly IResourceService _resourceService;
 
+        private readonly IPlayersService _playersService;
+
         private readonly IMapper _mapper;
-        public AdminController(IResourceService resourceService, IMapper mapper)
+        public AdminController(IResourceService resourceService, IPlayersService playersService, IMapper mapper)
         {
             _resourceService = resourceService;
+            _playersService = playersService;
             _mapper = mapper;
         }
         public IActionResult Index()
@@ -23,6 +28,7 @@ namespace MinecraftFarm.Controllers
             return View();
         }
 
+        #region Resource
         public async Task<IActionResult> Resources()
         {
             var dtos = await _resourceService.GetAll();
@@ -41,7 +47,7 @@ namespace MinecraftFarm.Controllers
         [HttpPost]
         public IActionResult AddResource(ResourceViewModel model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var dto = _mapper.Map<ResourceDto>(model);
                 _resourceService.Add(dto);
@@ -75,6 +81,56 @@ namespace MinecraftFarm.Controllers
         public IActionResult DeleteResource(int id)
         {
             _resourceService.DeleteById(id);
+            return Ok();
+        }
+        #endregion
+
+        public async Task<IActionResult> Players()
+        {
+            var dtos = await _playersService.GetAll();
+            var models = _mapper.Map<IReadOnlyCollection<PlayerDto>, IReadOnlyCollection<PlayerViewModel>>(dtos);
+            return View(models);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditPlayer(int id)
+        {
+            var dto = await _playersService.GetById(id);
+            var model = _mapper.Map<PlayerDto, PlayerViewModel>(dto);
+            model.Action = Action.Edit;
+            return View("EditPlayer", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditPlayer(PlayerViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var dto = _mapper.Map<PlayerViewModel, PlayerDto>(model);
+                await _playersService.Update(dto);
+                return RedirectToAction(nameof(Players));
+            }
+            return View("EditPlayer", model);
+        }
+
+        [HttpPost]
+        public IActionResult ResetPasswordPlayer(int id)
+        {
+            _playersService.ResetPasswordById(id);
+            return Ok();
+        }
+
+        [HttpPost]
+        public IActionResult BanPlayer(int id)
+        {
+            _playersService.BanById(id);
+            return Ok();
+        }
+
+        [HttpPost]
+        public IActionResult UnbanPlayer(int id)
+        {
+            _playersService.UnbanById(id);
             return Ok();
         }
     }

@@ -22,7 +22,10 @@ namespace MinecraftFarm.DataAccessLayer.Entities
         [MinLength(4)]
         public string Nickname { get; set; }
 
+        [Range(0, int.MaxValue)]
         public int Emeralds { get; set; }
+
+        public bool IsBanned { get; set; }
 
         public virtual ICollection<PlayerResource> Resources { get; set; }
 
