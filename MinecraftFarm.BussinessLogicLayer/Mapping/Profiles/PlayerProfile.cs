@@ -12,7 +12,8 @@ namespace MinecraftFarm.BussinessLogicLayer.Mapping.Profiles
             CreateMap<PlayerDto, Player>()
                 .ForMember(p => p.Id, e => e.Ignore())
                 .ForMember(p => p.Login, e => e.Ignore())
-                .ForMember(p => p.Password, e => e.Ignore());
+                .ForMember(p => p.Password, e => e.Ignore())
+                .ForMember(p => p.IsBanned, e => e.Ignore());
         }
     }
 }
