@@ -1,0 +1,72 @@
+﻿@model ICollection<MinecraftFarm.ViewModels.PlayerViewModel>
+<div>
+    @foreach (var player in Model)
+    {
+    <div class="player">
+        @*<img style="width: 32px; height: 32px" src="@player.IconFileName" alt="Error image" />*@
+        <h3>@player.Nickname</h3>
+        <p><b>Id: </b>@player.Id</p>
+        <p><b>Nickname: </b>@player.Nickname</p>
+        <a class="btn btn-info" asp-action="EditPlayer" asp-route-id="@player.Id">Edit</a>
+        <button class="btn btn-danger btn-reset-password" data-id="@player.Id">Reset password</button>
+        @if (player.IsBanned == true)
+        {
+            <button class="btn btn-success btn-unban" data-id="@player.Id">Unban</button>
+        }
+        else
+        {
+            <button class="btn btn-danger btn-ban" data-id="@player.Id">Ban</button>
+        }
+    </div>
+        <hr />
+    }
+</div>
+
+@section Scripts{
+    <script>
+        $(".btn-reset-password").click((el) => {
+            let id = $(el.target).data("id");
+            if (confirm("Are you really want to reset password?")) {
+                $.ajax({
+                    url: '@Url.Action("ResetPasswordPlayer", "Admin")',
+                    method: 'post',
+                    data: { id: id },
+                    error: function () { alert("Error occured!") },
+                    success: function () {
+                        alert("Password has been reset");
+                    }
+                });
+            }
+        })
+
+        $(".btn-ban").click((el) => {
+            let id = $(el.target).data("id");
+            if (confirm("Are you really want to ban user?")) {
+                $.ajax({
+                    url: '@Url.Action("BanPlayer", "Admin")',
+                    method: 'post',
+                    data: { id: id },
+                    error: function () { alert("Error occured!") },
+                    success: function () {
+                        $(el.target).parent(".player").hide();
+                    }
+                });
+            }
+        })
+
+        $(".btn-unban").click((el) => {
+            let id = $(el.target).data("id");
+            if (confirm("Are you really want to unban user?")) {
+                $.ajax({
+                    url: '@Url.Action("UnbanPlayer", "Admin")',
+                    method: 'post',
+                    data: { id: id },
+                    error: function () { alert("Error occured!") },
+                    success: function () {
+                        $(el.target).attr("disabled", "disabled");
+                    }
+                });
+            }
+        })
+    </script>
+}

@@ -10,10 +10,18 @@ namespace MinecraftFarm.BussinessLogicLayer.Contracts
 
         public Task<PlayerDto> GetById(int id);
 
-        public void Update(PlayerDto playerDto);
+        public Task Update(PlayerDto playerDto);
 
         public void ChangeResourceQuantities(PlayerResourceDto[] playerResourceDtos);
 
         public void DeleteById(int id);
+
+        public void Add(PlayerDto playerDto);
+
+        public void ResetPasswordById(int id);
+
+        public void BanById(int id);
+
+        public void UnbanById(int id);
     }
 }

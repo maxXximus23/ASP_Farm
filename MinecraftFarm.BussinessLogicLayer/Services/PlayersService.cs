@@ -65,19 +65,66 @@ namespace MinecraftFarm.BussinessLogicLayer.Services
 
         public async Task<PlayerDto> GetById(int id)
         {
-            var player = await _databaseContext.Players.SingleAsync(player => player.Id == id);
+            var player = await _databaseContext.Players
+                .AsNoTracking()
+                .SingleAsync(player => player.Id == id);
 
             return _mapper.Map<PlayerDto>(player);
         }
 
-        public void Update(PlayerDto playerDto)
+        public async Task Update(PlayerDto playerDto)
         {
-            var player = _databaseContext.Players.Single(player => player.Id == playerDto.Id);
+            var player = await _databaseContext.Players.SingleAsync(player => player.Id == playerDto.Id);
 
-            player = _mapper.Map<Player>(playerDto);
+            _mapper.Map(playerDto, player);
 
-            _databaseContext.Update(player);
+            await _databaseContext.SaveChangesAsync();
+        }
+
+        public void Add(PlayerDto playerDto)
+        {
+            var newPlayer = _mapper.Map<PlayerDto, Player>(playerDto);
+            _databaseContext.Players.Add(newPlayer);
             _databaseContext.SaveChanges();
+        }
+
+        public void ResetPasswordById(int id)
+        {
+            var player = _databaseContext.Players
+                .Single(player => player.Id == id);
+
+            player.Password = GetRandomString(8);
+            
+            _databaseContext.SaveChanges();
+        }
+
+        public void BanById(int id)
+        {
+            var player = _databaseContext.Players
+                .Single(player => player.Id == id);
+
+            player.IsBanned = true;
+
+            _databaseContext.SaveChanges();
+        }
+
+        public void UnbanById(int id)
+        {
+            var player = _databaseContext.Players
+                .Single(player => player.Id == id);
+
+            player.IsBanned = false;
+
+            _databaseContext.SaveChanges();
+        }
+
+        private string GetRandomString(int length)
+        {
+            Random random = new Random();
+
+            const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }
