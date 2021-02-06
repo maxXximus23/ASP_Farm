@@ -15,5 +15,7 @@ namespace MinecraftFarm.BussinessLogicLayer.Contracts
         public void Update(ResourceDto resourceDto);
 
         public void DeleteById(int id);
+
+        public Task<ICollection<PlayerResourceDto>> GetPlayerResourcesById(int id);
     }
 }

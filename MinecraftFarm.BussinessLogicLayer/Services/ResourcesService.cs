@@ -55,6 +55,17 @@ namespace MinecraftFarm.BussinessLogicLayer.Services
             return _mapper.Map<ResourceDto>(resource);
         }
 
+        public async Task<ICollection<PlayerResourceDto>> GetPlayerResourcesById(int id)
+        {
+            var resources = await _databaseContext.PlayerResources
+                .AsNoTracking()
+                .Include(resources => resources.Resource)
+                .Where(resource => resource.PlayerId == id)
+                .ToArrayAsync();
+
+            return _mapper.Map<ICollection<PlayerResourceDto>>(resources);
+        }
+
         public void Update(ResourceDto resourceDto)
         {
             var resource = _databaseContext.Resources

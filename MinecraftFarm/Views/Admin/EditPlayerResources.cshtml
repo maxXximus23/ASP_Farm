@@ -1,0 +1,39 @@
+﻿@model ICollection<MinecraftFarm.ViewModels.PlayerResourceViewModel>
+<div>
+    <form method="post" asp-action="EditPlayerResources" asp-controller="Admin">
+        @foreach (var resource in Model)
+        {
+            <div class="form-group" data-resource-id ="@resource.Id">
+                <label asp-for="@resource.Resource.Name">@resource.Resource.Name</label>
+                <input min="0" type="number" autocomplete="off" class="form-control quantity" value="@resource.Quantity">
+            </div>
+        }
+        <button class="btn btn-success" type="button">Edit</button>
+    </form>
+</div>
+
+@section Scripts{
+    <script>
+        $(":button").click((el) => {
+            let id = $(el.target).data("id");
+            let viewModels = new Array();
+            $(".form-group").each(function (index, el) {
+                let resource = new Object();
+                resource.Id = $(el).data("resource-id");
+                resource.Quantity = $(el).find(".quantity").val();
+                viewModels.push(resource);
+            });
+            console.log(viewModels);
+
+            $.ajax({
+                url: '@Url.Action("EditPlayerResources", "Admin")',
+                method: 'post',
+                data: {model: viewModels},
+                error: function () { alert("Error occured!") },
+                success: function () {
+                    window.location.replace("@Url.Action("Players", "Admin")");
+                }
+            });
+        })
+    </script>
+}
