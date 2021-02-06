@@ -5,6 +5,7 @@ using MinecraftFarm.BussinessLogicLayer.DTOs;
 using MinecraftFarm.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Action = MinecraftFarm.ViewModels.Action;
 
@@ -99,6 +100,22 @@ namespace MinecraftFarm.Controllers
             var model = _mapper.Map<PlayerDto, PlayerViewModel>(dto);
             model.Action = Action.Edit;
             return View("EditPlayer", model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditPlayerResources(int id)
+        {
+            var dtos = await _resourceService.GetPlayerResourcesById(id);
+            var model = _mapper.Map<ICollection<PlayerResourceDto>, ICollection<PlayerResourceViewModel>>(dtos);
+            return View("EditPlayerResources", model);
+        }
+
+        [HttpPost]
+        public IActionResult EditPlayerResources(ICollection<PlayerResourceViewModel> model)
+        {
+            var dtos = _mapper.Map<ICollection<PlayerResourceViewModel>, ICollection<PlayerResourceDto>>(model).ToArray();
+            _playersService.ChangeResourceQuantities(dtos);
+            return Ok();
         }
 
         [HttpPost]
