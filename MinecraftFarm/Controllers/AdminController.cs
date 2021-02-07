@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MinecraftFarm.BussinessLogicLayer.Contracts;
 using MinecraftFarm.BussinessLogicLayer.DTOs;
@@ -26,7 +27,11 @@ namespace MinecraftFarm.Controllers
         }
         public IActionResult Index()
         {
-            return View();
+            if (User.Identity.IsAuthenticated)
+            {
+                return View();
+            }
+            return View("~/Views/Account/Login.cshtml");
         }
 
         #region Resource

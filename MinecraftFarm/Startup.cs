@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +30,15 @@ namespace MinecraftFarm
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<IPlayersService, PlayersService>();
             services.AddScoped<IResourceService, ResourcesService>();
+            services.AddScoped<IAccountService, AccountsService>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
+            // установка конфигурации подключения
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options => //CookieAuthenticationOptions
+                {
+                    options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +57,8 @@ namespace MinecraftFarm
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseAuthentication();    // аутентификация
 
             app.UseEndpoints(endpoints =>
             {

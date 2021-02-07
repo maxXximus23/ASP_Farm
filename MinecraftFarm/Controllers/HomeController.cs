@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MinecraftFarm.DataAccessLayer.Contexts;
-using MinecraftFarm.DataAccessLayer.Entities;
 using MinecraftFarm.Models;
+using System.Diagnostics;
 
 namespace MinecraftFarm.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -23,9 +20,18 @@ namespace MinecraftFarm.Controllers
             _database = database;
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
-            return View();
+            if (User.Identity.IsAuthenticated)
+            {
+                return View();
+            }
+            return View("~/Views/Account/Login.cshtml");
+        }
+        public IActionResult About()
+        {
+            return Content("Authorized");
         }
 
         public IActionResult Privacy()
