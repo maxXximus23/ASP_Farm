@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using MinecraftFarm.DataAccessLayer.Contexts;
 using MinecraftFarm.Models;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace MinecraftFarm.Controllers
 {
@@ -21,6 +22,7 @@ namespace MinecraftFarm.Controllers
         }
 
         [AllowAnonymous]
+        [Authorize(Roles = "admin, user")]
         public IActionResult Index()
         {
             if (User.Identity.IsAuthenticated)
@@ -29,6 +31,9 @@ namespace MinecraftFarm.Controllers
             }
             return View("~/Views/Account/Login.cshtml");
         }
+
+        [Authorize(Roles = "admin")]
+        [Authorize(Policy = "OnlyForAdmin")]
         public IActionResult About()
         {
             return Content("Authorized");

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using MinecraftFarm.BussinessLogicLayer.Contracts;
 using MinecraftFarm.BussinessLogicLayer.Services;
 using MinecraftFarm.DataAccessLayer.Contexts;
+using MinecraftFarm.DataAccessLayer.Entities;
 using System;
 
 namespace MinecraftFarm
@@ -39,6 +40,12 @@ namespace MinecraftFarm
                 {
                     options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
                 });
+
+            services.AddAuthorization(opts => {
+                opts.AddPolicy("OnlyForAdmin", policy => {
+                    policy.RequireRole(roles: "Admin");
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
